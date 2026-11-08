@@ -1,3 +1,5 @@
+import math
+
 import cv2 as cv
 import mediapipe as mp
 
@@ -18,6 +20,8 @@ detector = vision.HandLandmarker.create_from_options(options)
 #Webcam
 cap = cv.VideoCapture(0)
 
+pinching = False
+
 while True:
     ret, frame = cap.read()
 
@@ -33,6 +37,23 @@ while True:
 
     if result.hand_landmarks:
         hand = result.hand_landmarks[0] #hand now has 21 handlandmarks
+
+        thumb_tip = hand[4]
+        index_tip = hand[8]
+
+        distance = math.sqrt(
+            (thumb_tip.x - index_tip.x)**2 +
+            (thumb_tip.y - index_tip.y)**2
+        )
+
+        if distance <0.07:
+            current_pinch = True
+        else:
+            current_pinch = False
+
+        if current_pinch and not pinching:
+            print("Pinch Started")
+        pinching = current_pinch
 
         for landmark in hand:
 

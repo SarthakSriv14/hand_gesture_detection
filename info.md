@@ -26,3 +26,18 @@ BaseOptions → where is the model?
 HandLandmarkerOptions → how should we configure the detector?
 HandLandmarker.create_from_options() → create the detector
 
+          distance < threshold?
+                  │
+          ┌───────┴───────┐
+          │               │
+         YES             NO
+          │               │
+      PINCHING        NOT PINCHING
+          │
+          │
+ previous = False?
+          │
+        YES
+          │
+     PINCH STARTED
+

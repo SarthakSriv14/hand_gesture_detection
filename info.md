@@ -41,3 +41,18 @@ HandLandmarker.create_from_options() → create the detector
           │
      PINCH STARTED
 
+-------------------------------------------------------------------------------
+PyAutoGUI - https://pyautogui.readthedocs.io/en/latest/
+
+We are not using cv.setMouseCallback() for mouse events. That callback only handles mouse events inside the OpenCV window. If we want to control the actual operating-system cursor,  we'll use PyAutoGUI.
+
+pyautogui.click() is kept inside the if-block of pinch test. If pinch is detected, i makes the cursor click at it's current position.
+
+we need to convert mediapipe coordinates to screen coordinates so: we mutiply screen dimensions with required finger's (here tip of index finger) x and y coordinates, store these mutiplications in two variables and then passing those two varibles to pyautogui.moveTo() function. this makes our cursor follow the fingertip of index finger
+
+But the movement of cursor horizontally is mirrored, so we have to compensate for that in our code
+
+The jitter problem - even a tiny change in mediapipe's coordinates immediately changes the cursor position, to fix this we'll use smoothing.
+
+smooth = previous + α(new - previous), where α ranges from 0 to 1
+for example if α=0.2, it means to move 20% of the way toward the new position

@@ -1,5 +1,6 @@
 import math
 
+import pyautogui
 import cv2 as cv
 import mediapipe as mp
 
@@ -21,6 +22,12 @@ detector = vision.HandLandmarker.create_from_options(options)
 cap = cv.VideoCapture(0)
 
 pinching = False
+
+screen_width, screen_height = pyautogui.size()
+
+prev_x = 0
+prev_y = 0
+alpha = 0.4
 
 while True:
     ret, frame = cap.read()
@@ -46,6 +53,17 @@ while True:
             (thumb_tip.y - index_tip.y)**2
         )
 
+        target_x = int((1 - index_tip.x) * screen_width)
+        target_y = int(index_tip.y * screen_height)
+
+        smooth_x = prev_x + alpha * (target_x - prev_x)
+        smooth_y = prev_y + alpha * (target_y - prev_y)
+
+        pyautogui.moveTo(smooth_x,smooth_y)
+
+        prev_x = smooth_x
+        prev_y = smooth_y
+
         if distance <0.07:
             current_pinch = True
         else:
@@ -53,6 +71,8 @@ while True:
 
         if current_pinch and not pinching:
             print("Pinch Started")
+            pyautogui.click()
+
         pinching = current_pinch
 
         for landmark in hand:

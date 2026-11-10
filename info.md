@@ -56,3 +56,23 @@ The jitter problem - even a tiny change in mediapipe's coordinates immediately c
 
 smooth = previous + α(new - previous), where α ranges from 0 to 1
 for example if α=0.2, it means to move 20% of the way toward the new position
+
+Issue encountered - while pinching, cursor still follows the index fingertip. To solve this, we are going to use a gesture state. If pinching is FALSE, move the cursor normally. If pinching is TRUE, don't move the cursor and detect the pinch.
+
+          Detect hand
+              ↓
+        Calculate pinch
+              ↓
+       ┌──────┴──────┐
+       │             │
+    Pinching      Not pinching
+       │             │
+       |             ↓
+       |         Move cursor
+       ↓
+   Freeze cursor
+
+Another issue is that involvement of other hand into the camera frame confuses the cursor, because we have only told mediapipe to assume the very first hand it detects is the hand we want to use. To solve this, we manually set num_hands = 1. 
+
+We are furthur normalizing the coordinates of mediapipe so that we don't have to move our hands too much, so instead of using the entire camera frame to move the cursor or to control it, we are defining a smaller active region in the middle of it.
+

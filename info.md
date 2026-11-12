@@ -76,3 +76,6 @@ Another issue is that involvement of other hand into the camera frame confuses t
 
 We are furthur normalizing the coordinates of mediapipe so that we don't have to move our hands too much, so instead of using the entire camera frame to move the cursor or to control it, we are defining a smaller active region in the middle of it.
 
+added the normalized frame using cv.rectangle
+
+reduced jitter issue furthur by using dead zone concept, we have put the dead zone before the smoothing because it's better for us to tackle the raw movement of cursor first.

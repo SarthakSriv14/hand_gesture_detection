@@ -26,6 +26,8 @@ pinching = False
 
 screen_width, screen_height = pyautogui.size()
 
+dead_zone = 10 #ignore if index moves less than 10 pixels(reducing the jitter)
+
 prev_x = 0
 prev_y = 0
 alpha = 0.4
@@ -37,6 +39,15 @@ control_bottom = 0.8
 
 while True:
     ret, frame = cap.read()
+
+    height,width = frame.shape[:2]
+
+    left = int(control_left * width)
+    right = int(control_right * width)
+    top = int(control_top * height)
+    bottom = int(control_bottom * height)
+
+    cv.rectangle(frame, (left,top), (right,bottom), (0,0,255), 2)
 
     frame_rgb = cv.cvtColor(frame,cv.COLOR_BGR2RGB)
 
@@ -83,6 +94,12 @@ while True:
 
             target_x = int((1 - x) * screen_width)
             target_y = int(y * screen_height)
+
+            #applying dead_zone before the smoothing
+            if abs(target_x - prev_x) < dead_zone:
+                target_x = prev_x
+            if abs(target_y - prev_y) < dead_zone:
+                target_y = prev_y
 
             smooth_x = prev_x + alpha * (target_x - prev_x)
             smooth_y = prev_y + alpha * (target_y - prev_y)
